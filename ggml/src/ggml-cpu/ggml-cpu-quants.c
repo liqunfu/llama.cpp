@@ -1760,6 +1760,21 @@ void quantize_row_i8_s(const float * x, void * y, int64_t n, float* act_scales, 
     act_sums[0] = sum;
 }
 
+void dequantize_row_i8_s(const int8_t * GGML_RESTRICT y, float * GGML_RESTRICT x, int64_t n, const float * GGML_RESTRICT act_scales) {
+    float s = act_scales[0];
+    if (s == 0.0f) {
+        // Handle zero scale (should not happen if quantization was valid)
+        for (int64_t i = 0; i < n; ++i) {
+            x[i] = 0.0f;
+        }
+        return;
+    }
+    float inv_s = 1.0f / s;
+    for (int64_t i = 0; i < n; ++i) {
+        x[i] = (float)y[i] * inv_s;
+    }
+}
+
 static const int8_t kvalues_iq4nl[16] = {-127, -104, -83, -65, -49, -35, -22, -10, 1, 13, 25, 38, 53, 69, 89, 113};
 
 //===================================== Q8_K ==============================================
