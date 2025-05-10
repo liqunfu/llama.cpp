@@ -362,6 +362,23 @@ void dequantize_row_q8_0(const block_q8_0 * GGML_RESTRICT x, float * GGML_RESTRI
     }
 }
 
+void dequantize_row_q8_1(const block_q8_1 * restrict x, float * restrict y, int64_t k) {
+    assert(QK8_1 == 32);
+    assert(k % QK8_1 == 0);
+    const int nb = k / QK8_1;
+
+    for (int i = 0; i < nb; i++) {
+        // Convert scale from fp16 to fp32
+        const float d = GGML_FP16_TO_FP32(x[i].d);
+
+        // Dequantize each element in the block
+        for (int j = 0; j < QK8_1; j++) {
+            // y = quantized_value * scale
+            y[i * QK8_1 + j] = x[i].qs[j] * d;
+        }
+    }
+}
+
 //
 // 2-6 bit quantization in super-blocks
 //
