@@ -350,6 +350,11 @@ class GGUFReader:
             elif ggml_type == GGMLQuantizationType.I64:
                 item_count = n_elems
                 item_type = np.int64
+            elif ggml_type == GGMLQuantizationType.I2_S:
+                n_bytes += 32
+                item_count = n_bytes
+                item_type = np.uint8
+                np_dims = (n_bytes, 1)
             else:
                 item_count = n_bytes
                 item_type = np.uint8
