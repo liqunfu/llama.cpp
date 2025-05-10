@@ -2209,6 +2209,21 @@ void dequantize_row_tq2_0(const block_tq2_0 * GGML_RESTRICT x, float * GGML_REST
     }
 }
 
+void dequantize_row_i8_s(const int8_t * GGML_RESTRICT y, float * GGML_RESTRICT x, int64_t n, const float * GGML_RESTRICT act_scales) {
+    float s = act_scales[0];
+    if (s == 0.0f) {
+        // Handle zero scale (should not happen if quantization was valid)
+        for (int64_t i = 0; i < n; ++i) {
+            x[i] = 0.0f;
+        }
+        return;
+    }
+    float inv_s = 1.0f / s;
+    for (int64_t i = 0; i < n; ++i) {
+        x[i] = (float)y[i] * inv_s;
+    }
+}
+
 // ====================== "True" 2-bit (de)-quantization
 
 void dequantize_row_iq2_xxs(const block_iq2_xxs * GGML_RESTRICT x, float * GGML_RESTRICT y, int64_t k) {
