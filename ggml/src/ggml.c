@@ -630,6 +630,7 @@ static const struct ggml_type_traits type_traits[GGML_TYPE_COUNT] = {
         .blck_size                = QK8_1,
         .type_size                = sizeof(block_q8_1),
         .is_quantized             = true,
+        .to_float                 = (ggml_to_float_t) dequantize_row_q8_1,
         .from_float_ref           = (ggml_from_float_t) quantize_row_q8_1_ref,
     },
     [GGML_TYPE_Q2_K] = {
@@ -749,6 +750,8 @@ static const struct ggml_type_traits type_traits[GGML_TYPE_COUNT] = {
         .blck_size                = QK_K,
         .type_size                = sizeof(block_q8_K),
         .is_quantized             = true,
+        .to_float                 = (ggml_to_float_t) dequantize_row_q8_K,
+        .from_float_ref           = (ggml_from_float_t) quantize_row_q8_K_ref,
     },
     [GGML_TYPE_BF16] = {
         .type_name                = "bf16",
@@ -792,24 +795,37 @@ static const struct ggml_type_traits type_traits[GGML_TYPE_COUNT] = {
         .to_float                 = (ggml_to_float_t) dequantize_row_tq2_0,
         .from_float_ref           = (ggml_from_float_t) quantize_row_tq2_0_ref,
     },
+    [GGML_TYPE_I2_S] = {
+        .type_name                = "i2_s",
+        .blck_size                = 1,
+        .type_size                = sizeof(int8_t),
+        .is_quantized             = true
+    },
     [36] = { // GGML_TYPE_IQ4_NL_4_4
         .type_name                = "TYPE_IQ4_NL_4_4 REMOVED, use IQ4_NL with runtime repacking",
         .blck_size                = 0,
         .type_size                = 0,
         .is_quantized             = false,
     },
-    [37] = { // GGML_TYPE_IQ4_NL_4_8
-        .type_name                = "TYPE_IQ4_NL_4_8 REMOVED, use IQ4_NL with runtime repacking",
-        .blck_size                = 0,
-        .type_size                = 0,
-        .is_quantized             = false,
+    [GGML_TYPE_I8_S] = {
+        .type_name                = "i8_s",
+        .blck_size                = 1,
+        .type_size                = sizeof(int8_t),
+        .is_quantized             = true,
+        .to_float                 = (ggml_to_float_t)dequantize_row_i8_s,
     },
-    [38] = { // GGML_TYPE_IQ4_NL_8_8
-        .type_name                = "TYPE_IQ4_NL_8_8 REMOVED, use IQ4_NL with runtime repacking",
-        .blck_size                = 0,
-        .type_size                = 0,
-        .is_quantized             = false,
-    },
+    // [37] = { // GGML_TYPE_IQ4_NL_4_8
+    //     .type_name                = "TYPE_IQ4_NL_4_8 REMOVED, use IQ4_NL with runtime repacking",
+    //     .blck_size                = 0,
+    //     .type_size                = 0,
+    //     .is_quantized             = false,
+    // },
+    // [38] = { // GGML_TYPE_IQ4_NL_8_8
+    //     .type_name                = "TYPE_IQ4_NL_8_8 REMOVED, use IQ4_NL with runtime repacking",
+    //     .blck_size                = 0,
+    //     .type_size                = 0,
+    //     .is_quantized             = false,
+    // },
 };
 
 const struct ggml_type_traits * ggml_get_type_traits(enum ggml_type type) {

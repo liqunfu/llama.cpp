@@ -385,10 +385,14 @@ extern "C" {
         // GGML_TYPE_Q4_0_8_8 = 33,
         GGML_TYPE_TQ1_0   = 34,
         GGML_TYPE_TQ2_0   = 35,
+        GGML_TYPE_I2_S    = 36,
+        GGML_TYPE_I8_S    = 37,
+        // GGML_TYPE_TL1      = 38,
+        // GGML_TYPE_TL2      = 39,
         // GGML_TYPE_IQ4_NL_4_4 = 36,
         // GGML_TYPE_IQ4_NL_4_8 = 37,
         // GGML_TYPE_IQ4_NL_8_8 = 38,
-        GGML_TYPE_COUNT   = 39,
+        GGML_TYPE_COUNT   = 38,
     };
 
     // precision
