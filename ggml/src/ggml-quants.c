@@ -356,6 +356,24 @@ void dequantize_row_q8_0(const block_q8_0 * GGML_RESTRICT x, float * GGML_RESTRI
     }
 }
 
+void dequantize_row_q8_1(const block_q8_1 * restrict x, float * restrict y, int64_t k) {
+    assert(QK8_1 == 32);
+    assert(k % QK8_1 == 0);
+    const int nb = k / QK8_1;
+
+    for (int i = 0; i < nb; i++) {
+        // Convert scale from fp16 to fp32
+        const float d = GGML_FP16_TO_FP32(x[i].d);
+
+        // Dequantize each element in the block
+        for (int j = 0; j < QK8_1; j++) {
+            // y = quantized_value * scale
+            y[i * QK8_1 + j] = x[i].qs[j] * d;
+        }
+    }
+}
+
+
 //
 // 2-6 bit quantization in super-blocks
 //
@@ -2185,6 +2203,22 @@ void dequantize_row_tq2_0(const block_tq2_0 * GGML_RESTRICT x, float * GGML_REST
         }
     }
 }
+
+void dequantize_row_i8_s(const int8_t * GGML_RESTRICT y, float * GGML_RESTRICT x, int64_t n, const float * GGML_RESTRICT act_scales) {
+    float s = act_scales[0];
+    if (s == 0.0f) {
+        // Handle zero scale (should not happen if quantization was valid)
+        for (int64_t i = 0; i < n; ++i) {
+            x[i] = 0.0f;
+        }
+        return;
+    }
+    float inv_s = 1.0f / s;
+    for (int64_t i = 0; i < n; ++i) {
+        x[i] = (float)y[i] * inv_s;
+    }
+}
+
 
 // ====================== "True" 2-bit (de)-quantization
 

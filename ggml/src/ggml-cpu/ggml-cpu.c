@@ -364,6 +364,16 @@ static const struct ggml_type_traits_cpu type_traits_cpu[GGML_TYPE_COUNT] = {
         .vec_dot_type             = GGML_TYPE_Q8_K,
         .nrows                    = 1,
     },
+    [GGML_TYPE_I2_S] = {
+        .from_float               = NULL,
+        .vec_dot                  = (ggml_vec_dot_t) ggml_vec_dot_i2_i8_s,
+        .vec_dot_type             = GGML_TYPE_I8_S,
+        .nrows                    = 1,
+    },
+    [GGML_TYPE_I8_S] = {
+        .from_float               = quantize_row_i8_s,
+        .nrows                    = 1,
+    },
 };
 
 const struct ggml_type_traits_cpu * ggml_get_type_traits_cpu(enum ggml_type type) {
